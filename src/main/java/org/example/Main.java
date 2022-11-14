@@ -21,8 +21,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-import org.javatuples.Pair;
-
 import org.example.Datatable;
 import org.example.DatatableIO;
 import org.example.DatabaseConnection;
@@ -92,7 +90,7 @@ public class Main {
                 clearButton.doClick();
                 JFileChooser fileChooser = new JFileChooser();
                 fileChooser.setFileFilter(new FileNameExtensionFilter("CSV Files", "csv"));
-                fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+                fileChooser.setCurrentDirectory(new File("C:\\Users\\wflis\\IdeaProjects\\integracja-lab"));
                 int result = fileChooser.showOpenDialog(frame);
                 if (result == JFileChooser.APPROVE_OPTION) {
                     File selectedFile = fileChooser.getSelectedFile();
@@ -159,6 +157,17 @@ public class Main {
                     mainTable.addRow(rowValues);
                 }
                 mainTable.repaintTable();
+                System.out.println("Duplicates: " + mainTable.getDuplicates());
+
+                // count number of elements in mainTable.getDuplicates()
+                int duplicates = 0;
+                for (int i = 0; i < mainTable.getDuplicates().size(); i++) {
+                    if (mainTable.getDuplicates().get(i) != null) {
+                        duplicates++;
+                    }
+                }
+                System.out.println("Row count: " + mainTable.getRowCount());
+                System.out.println("Duplicates state count: " + duplicates);
             }
         });
 

@@ -28,7 +28,7 @@ public class DatabaseConnection {
                 + "	touchscreen text NOT NULL,\n"
                 + "	processor_name text NOT NULL,\n"
                 + "	processor_cores integer NOT NULL,\n"
-                + "	clock_speed real NOT NULL,\n"
+                + "	clock_speed integer NOT NULL,\n"
                 + "	ram integer NOT NULL,\n"
                 + "	disk_size integer NOT NULL,\n"
                 + "	disk_type text NOT NULL,\n"

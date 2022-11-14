@@ -20,8 +20,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-import org.javatuples.Pair;
-
 import org.example.Datatable;
 
 public class DatatableIO {
@@ -33,8 +31,8 @@ public class DatatableIO {
             String line = scanner.nextLine();
             line = scanner.nextLine();
             while (scanner.hasNextLine()) {
-                String[] rows = line.split(";");
-                table.addRow(rows);
+                String[] row = line.split(";");
+                table.addRow(row, false);
                 line = scanner.nextLine();
             }
             scanner.close();
@@ -103,7 +101,7 @@ public class DatatableIO {
                     String graphic_card_name = eElement.getElementsByTagName("graphic_card").item(0).getChildNodes().item(1).getTextContent();
                     String graphic_card_memory = eElement.getElementsByTagName("graphic_card").item(0).getChildNodes().item(3).getTextContent();
 
-                    table.addRow(new String[] {manufacturer, screen_size, screen_type, screen_touchscreen, processor_name, processor_physical_cores, processor_clock_speed, ram, disc_storage, disc_type, graphic_card_name, graphic_card_memory, os, disc_reader});
+                    table.addRow(new String[] {manufacturer, screen_size, screen_type, screen_touchscreen, processor_name, processor_physical_cores, processor_clock_speed, ram, disc_storage, disc_type, graphic_card_name, graphic_card_memory, os, disc_reader}, false);
                 }
             }
         } catch (Exception e) {

@@ -6,26 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
-import java.io.FileWriter;
-import java.sql.*;
-import java.util.Scanner;
-import java.io.File;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
-
-import org.javatuples.Pair;
-
-import org.example.CustomTableCellRenderer;
-
 public class Datatable {
     public JPanel panel;
     public JTable table;
@@ -40,6 +20,8 @@ public class Datatable {
         this.setColumns(new String[] {"manufacturer", "screen size", "screen type", "touchscreen", "processor name", "processor cores", "clock speed", "ram", "disk size", "disk type", "graphics card name", "graphics card memory", "os", "disc reader"});
         this.duplicates = new ArrayList<>();
         this.modified = new ArrayList<>();
+
+        this.model.addTableModelListener(new CustomTableChangeListener(this));
     }
 
     public JPanel getPanel() {
@@ -70,6 +52,11 @@ public class Datatable {
         return this.model.getColumnCount();
     }
 
+    // get row count
+    public int getRowCount() {
+        return this.model.getRowCount();
+    }
+
     // repaint table
     public void repaintTable() {
         this.panel.removeAll();
@@ -92,6 +79,9 @@ public class Datatable {
     // clear model
     public void clear() {
         this.model = new DefaultTableModel();
+        this.model.addTableModelListener(new CustomTableChangeListener(this));
+        this.duplicates = new ArrayList<>();
+        this.modified = new ArrayList<>();
         this.setColumns(new String[] {"manufacturer", "screen size", "screen type", "touchscreen", "processor name", "processor cores", "clock speed", "ram", "disk size", "disk type", "graphics card name", "graphics card memory", "os", "disc reader"});
         repaintTable();
     }
@@ -99,7 +89,13 @@ public class Datatable {
     // set model
     public void setModel(DefaultTableModel model) {
         this.model = model;
+        this.model.addTableModelListener(new CustomTableChangeListener(this));
         repaintTable();
+    }
+
+    // get Duplicates
+    public List<Boolean> getDuplicates() {
+        return this.duplicates;
     }
 
     // check if ith element is duplicate
@@ -134,14 +130,31 @@ public class Datatable {
         }
     }
 
+    public boolean compareRows(String[] row1, String[] row2) {
+        // check if both rows have the same number of columns
+        if (row1.length != row2.length) {
+            return false;
+        }
+        // for each column, check if any of them are different, if so, return false
+        for (int i = 0; i < row1.length; i++) {
+            if (!row1[i].equals(row2[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // check for duplicate - function that takes a String[] row and checks if exactly the same row exists in the table. if no, return null, if yes return row index
     public Integer checkForDuplicate(String[] row) {
+        // for each row in the table, compare if it matches with the row passed as parameter
         for (int i = 0; i < this.model.getRowCount(); i++) {
+            // get row
             String[] row2 = new String[this.model.getColumnCount()];
             for (int j = 0; j < this.model.getColumnCount(); j++) {
-                row2[j] = this.model.getValueAt(i, j).toString();
+                row2[j] = (String) this.model.getValueAt(i, j);
             }
-            if (java.util.Arrays.equals(row, row2)) {
+            // compare row
+            if (compareRows(row, row2)) {
                 return i;
             }
         }
@@ -156,12 +169,19 @@ public class Datatable {
         this.table.setSelectionBackground(Color.RED);
     }
 
-    // add row to model
     public void addRow(String[] row) {
+        this.addRow(row, true);
+    }
+
+    public void addRow(String[] row, boolean check_if_duplicate) {
+        System.out.println("Called addRow with check_if_duplicate: " + check_if_duplicate);
         Integer i = checkForDuplicate(row);
-        if (i != null) {
-            setDuplicate(i);
+        if (i != null && check_if_duplicate) {
+            this.setDuplicate(i);
+            colourRow(i);
         } else {
+            this.duplicates.add(false);
+            this.modified.add(false);
             this.model.addRow(row);
         }
     }
